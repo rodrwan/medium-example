@@ -63,5 +63,42 @@ query {
 }
 ```
 
+# Mutation
+
+```
+mutation {
+  createUser(
+    input: {
+      email: "john.doe@example.org"
+      first_name: "John"
+      last_name: "Doe"
+      phone: "912345678"
+      birthdate: "1990-01-06T11:30:00+00:00"
+      address: {
+        address_line: "4129 Sycamore Lake Road"
+        city: "Green Bay"
+        locality: "Wisconsin"
+        region: "Wisconsin"
+        country: "USA"
+        postal_code: 54304
+      }
+    }
+  ) {
+    id
+    email
+    first_name
+    last_name
+    phone
+    address {
+      address_line
+      city
+      locality
+      region
+      country
+      postal_code
+    }
+  }
+}
+```
 
 R.
