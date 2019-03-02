@@ -1,0 +1,12 @@
+schema:
+- schema.graphql
+exec:
+  filename: graphql/generated.go
+resolver:
+  filename: graphql/resolver.go
+  type: Resolver
+models:
+  User:
+    model: github.com/rodrwan/medium-example.User
+  Address:
+    model: github.com/rodrwan/medium-example.Address
