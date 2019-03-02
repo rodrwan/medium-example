@@ -1,0 +1,49 @@
+type User {
+    id: ID!
+    email: String!
+    first_name: String!
+    last_name: String!
+    phone: String!
+    birthdate: Time!
+    address: Address!
+}
+
+type Address {
+    user_id: String!
+    address_line: String!
+    city: String!
+    locality: String!
+    region: String!
+    country: String!
+    postal_code: Int!
+}
+
+input AddressData {
+    address_line: String!
+    city: String!
+    locality: String!
+    region: String!
+    country: String!
+    postal_code: Int!
+}
+
+input UserData {
+    email: String!
+    first_name: String!
+    last_name: String!
+    phone: String!
+    birthdate: Time!
+    address: AddressData!
+}
+
+type Query {
+    users: [User]!
+    user(id: ID!): User!
+}
+
+type Mutation {
+    createUser(input: UserData): User
+}
+
+
+scalar Time
