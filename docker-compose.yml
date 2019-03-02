@@ -1,0 +1,41 @@
+version: "3.6"
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_medium
+    hostname: postgres_medium
+    restart: always
+    networks:
+      medium:
+        aliases:
+          - postgres_medium
+    ports:
+      - "5432:5432"
+    environment:
+      - DB_USER=mediumexample
+      - BD_PASS=me1234
+      - DB_NAME=example
+      - POSTGRES_DB=example
+      - POSTGRES_DATABASE=example
+      - POSTGRES_USER=mediumexample
+      - POSTGRES_PASSWORD=me1234
+    volumes:
+      - .:/var/lib/postgresql
+  mediumexample:
+    build: .
+    container_name: mediumexample
+    hostname: mediumexample
+    networks:
+      medium:
+        aliases:
+          - mediumexample
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      - POSTGRES_DSN=postgres://mediumexample:me1234@postgres_medium:5432/example?sslmode=disable
+
+networks:
+  medium: {}
