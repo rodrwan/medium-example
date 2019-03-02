@@ -3,6 +3,16 @@
 Este repositorio es utilizado en un nuevo post de medium que explica el uso de
 GraphQL, PostgreSQL, Goose y Go.
 
+Básicamente es un mini monolito que permite crear usuarios con direcciones usando GraphQL como protocolo de comunicación.
+
+Librerias usadas:
+
+- github.com/99designs/gqlgen
+- github.com/gorilla/handlers
+- github.com/lib/pq
+- github.com/jmoiron/sqlx
+- github.com/Masterminds/squirrel
+
 
 ## Instalar goose
 
