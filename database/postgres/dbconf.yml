@@ -1,0 +1,3 @@
+docker:
+  driver: postgres
+  dsn: postgres://mediumexample:me1234@localhost:5432/example?sslmode=disable
