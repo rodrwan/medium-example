@@ -8,6 +8,7 @@ import (
 	"github.com/Masterminds/squirrel"
 	"github.com/lib/pq"
 	mediumexample "github.com/rodrwan/medium-example"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -15,10 +16,10 @@ var (
 	ErrUserNotFound = errors.New("user not found")
 )
 
-// UserService is a service that query users table using SQLExecutor.
+// UsersService is a service that query users table using SQLExecutor.
 type UsersService struct {
 	Store  SQLExecutor
-	Logger Logger
+	Logger *logrus.Logger
 }
 
 // Get gets a user by query params.
@@ -35,11 +36,14 @@ func (us *UsersService) Get(query *mediumexample.UserQueryOptions) (*mediumexamp
 	}
 
 	var u mediumexample.User
-	us.Logger.Print(sqlString, args...)
 	row := us.Store.QueryRowx(sqlString, args...)
 	if err := row.StructScan(&u); err != nil {
 		return nil, us.userError(sqlString, args, err)
 	}
+
+	us.Logger.WithFields(logrus.Fields{
+		"query": sqlString,
+	}).Info("OK")
 
 	return &u, nil
 }
@@ -52,7 +56,6 @@ func (us *UsersService) Select() ([]*mediumexample.User, error) {
 		return nil, err
 	}
 
-	us.Logger.Print(sqlString, args...)
 	rows, err := us.Store.Queryx(sqlString, args...)
 	if err != nil {
 		return nil, err
@@ -69,6 +72,10 @@ func (us *UsersService) Select() ([]*mediumexample.User, error) {
 		uu = append(uu, &u)
 	}
 
+	us.Logger.WithFields(logrus.Fields{
+		"query": sqlString,
+	}).Info("OK")
+
 	return uu, nil
 }
 
@@ -84,11 +91,14 @@ func (us *UsersService) Create(u *mediumexample.User) error {
 		return err
 	}
 
-	us.Logger.Print(sqlString, args...)
 	row := us.Store.QueryRowx(sqlString, args...)
 	if err := row.StructScan(u); err != nil {
 		return us.userError(sqlString, args, err)
 	}
+
+	us.Logger.WithFields(logrus.Fields{
+		"query": sqlString,
+	}).Info("OK")
 
 	return nil
 }
@@ -109,11 +119,14 @@ func (us *UsersService) Update(u *mediumexample.User) error {
 		return err
 	}
 
-	us.Logger.Print(sqlString, args...)
 	row := us.Store.QueryRowx(sqlString, args...)
 	if err := row.StructScan(u); err != nil {
 		return us.userError(sqlString, args, err)
 	}
+
+	us.Logger.WithFields(logrus.Fields{
+		"query": sqlString,
+	}).Info("OK")
 
 	return nil
 }
@@ -129,11 +142,14 @@ func (us *UsersService) Delete(u *mediumexample.User) error {
 		return err
 	}
 
-	us.Logger.Print(sqlString, args...)
 	row := us.Store.QueryRowx(sqlString, args...)
 	if err := row.StructScan(u); err != nil {
 		return us.userError(sqlString, args, err)
 	}
+
+	us.Logger.WithFields(logrus.Fields{
+		"query": sqlString,
+	}).Info("OK")
 
 	return nil
 }
@@ -141,9 +157,11 @@ func (us *UsersService) Delete(u *mediumexample.User) error {
 func (us *UsersService) userError(sqlText string, args interface{}, err error) error {
 	pqErr, ok := err.(*pq.Error)
 	if !ok {
-		us.Logger.Warn(sqlText, args, err)
+		us.Logger.WithFields(logrus.Fields{
+			"query": sqlText,
+		}).Error(err)
 		if err == sql.ErrNoRows {
-			return ErrUserNotFound
+			return ErrAddressNotFound
 		}
 
 		return err
@@ -151,10 +169,14 @@ func (us *UsersService) userError(sqlText string, args interface{}, err error) e
 
 	errMsg, ok := errorCodeNames[pqErr.Code]
 	if !ok {
-		us.Logger.Warn(sqlText, args, pqErr)
+		us.Logger.WithFields(logrus.Fields{
+			"query": sqlText,
+		}).Error(errMsg)
 		return err
 	}
 
-	us.Logger.Warn(sqlText, args, pqErr)
+	us.Logger.WithFields(logrus.Fields{
+		"query": sqlText,
+	}).Error(pqErr)
 	return errMsg
 }

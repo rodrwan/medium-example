@@ -7,6 +7,7 @@ import (
 	"github.com/Masterminds/squirrel"
 	"github.com/lib/pq"
 	mediumexample "github.com/rodrwan/medium-example"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -17,7 +18,7 @@ var (
 // AddressesService is a service that query addresses table using SQLExecutor.
 type AddressesService struct {
 	Store  SQLExecutor
-	Logger Logger
+	Logger *logrus.Logger
 }
 
 // Get gets a user address by userID
@@ -34,11 +35,15 @@ func (as *AddressesService) Get(userID string) (*mediumexample.Address, error) {
 	}
 
 	var a mediumexample.Address
-	as.Logger.Print(sqlString, args...)
+
 	row := as.Store.QueryRowx(sqlString, args...)
 	if err := row.StructScan(&a); err != nil {
 		return nil, as.addressesError(sqlString, args, err)
 	}
+
+	as.Logger.WithFields(logrus.Fields{
+		"query": sqlString,
+	}).Info("OK")
 
 	return &a, nil
 }
@@ -55,11 +60,14 @@ func (as *AddressesService) Create(a *mediumexample.Address) error {
 		return err
 	}
 
-	as.Logger.Print(sql, args...)
 	row := as.Store.QueryRowx(sql, args...)
 	if err := row.StructScan(a); err != nil {
 		return as.addressesError(sql, args, err)
 	}
+
+	as.Logger.WithFields(logrus.Fields{
+		"query": sql,
+	}).Info("OK")
 
 	return nil
 }
@@ -81,11 +89,14 @@ func (as *AddressesService) Update(a *mediumexample.Address) error {
 		return err
 	}
 
-	as.Logger.Print(sql, args...)
 	row := as.Store.QueryRowx(sql, args...)
 	if err := row.StructScan(a); err != nil {
 		return as.addressesError(sql, args, err)
 	}
+
+	as.Logger.WithFields(logrus.Fields{
+		"query": sql,
+	}).Info("OK")
 
 	return nil
 }
@@ -100,11 +111,14 @@ func (as *AddressesService) Delete(a *mediumexample.Address) error {
 		return err
 	}
 
-	as.Logger.Print(sql, args...)
 	row := as.Store.QueryRowx(sql, args...)
 	if err := row.StructScan(a); err != nil {
 		return as.addressesError(sql, args, err)
 	}
+
+	as.Logger.WithFields(logrus.Fields{
+		"query": sql,
+	}).Info("OK")
 
 	return nil
 }
@@ -112,7 +126,9 @@ func (as *AddressesService) Delete(a *mediumexample.Address) error {
 func (as *AddressesService) addressesError(sqlText string, args interface{}, err error) error {
 	pqErr, ok := err.(*pq.Error)
 	if !ok {
-		as.Logger.Warn(sqlText, args, err)
+		as.Logger.WithFields(logrus.Fields{
+			"query": sqlText,
+		}).Error(err)
 		if err == sql.ErrNoRows {
 			return ErrAddressNotFound
 		}
@@ -122,10 +138,14 @@ func (as *AddressesService) addressesError(sqlText string, args interface{}, err
 
 	errMsg, ok := errorCodeNames[pqErr.Code]
 	if !ok {
-		as.Logger.Warn(sqlText, args, errMsg)
+		as.Logger.WithFields(logrus.Fields{
+			"query": sqlText,
+		}).Error(errMsg)
 		return err
 	}
 
-	as.Logger.Warn(sqlText, args, pqErr)
+	as.Logger.WithFields(logrus.Fields{
+		"query": sqlText,
+	}).Error(pqErr)
 	return errMsg
 }

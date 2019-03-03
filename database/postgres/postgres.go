@@ -1,9 +1,7 @@
 package postgres
 
 import (
-	"encoding/json"
 	"errors"
-	"io"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
@@ -26,45 +24,6 @@ type SQLExecutor interface {
 
 // TxFn is custom type that receive SQLExecutor and return an error.
 type TxFn func(SQLExecutor) error
-
-// Logger define basic behavior to logs.
-type Logger interface {
-	Print(query string, params ...interface{}) error
-	Warn(query string, params interface{}, err error) error
-}
-
-type dbLogger struct {
-	io.Writer `json:"-"`
-	Table     string      `json:"table,omitempty"`
-	Query     string      `json:"query,omitempty"`
-	Params    interface{} `json:"params,omitempty"`
-	Level     string      `json:"level,omitempty"`
-	Err       error       `json:"error,omitempty"`
-}
-
-func (dbl *dbLogger) Print(query string, params ...interface{}) error {
-	dbl.Query = query
-	dbl.Params = params
-	dbl.Level = "info"
-
-	return json.NewEncoder(dbl.Writer).Encode(dbl)
-}
-
-func (dbl *dbLogger) Warn(query string, params interface{}, err error) error {
-	dbl.Query = query
-	dbl.Params = params
-	dbl.Level = "warn"
-	dbl.Err = err
-	return json.NewEncoder(dbl.Writer).Encode(dbl)
-}
-
-// NewDBLogger return a new Logger.
-func NewDBLogger(w io.Writer, table string) Logger {
-	return &dbLogger{
-		Writer: w,
-		Table:  table,
-	}
-}
 
 var errorCodeNames = map[pq.ErrorCode]error{
 	// Class 00 - Successful Completion

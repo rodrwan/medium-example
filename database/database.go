@@ -1,7 +1,7 @@
 package database
 
 import (
-	"os"
+	"github.com/sirupsen/logrus"
 
 	"github.com/jmoiron/sqlx"
 	mediumexample "github.com/rodrwan/medium-example"
@@ -36,7 +36,7 @@ type Database struct {
 }
 
 // NewPostgres creates a new Database with postgres as driver.
-func NewPostgres(dsn string) (*Database, error) {
+func NewPostgres(logger *logrus.Logger, dsn string) (*Database, error) {
 	db, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
 		return nil, err
@@ -45,11 +45,11 @@ func NewPostgres(dsn string) (*Database, error) {
 	return &Database{
 		UsersService: &postgres.UsersService{
 			Store:  db,
-			Logger: postgres.NewDBLogger(os.Stdout, "users"),
+			Logger: logger,
 		},
 		AddressesService: &postgres.AddressesService{
 			Store:  db,
-			Logger: postgres.NewDBLogger(os.Stdout, "addresses"),
+			Logger: logger,
 		},
 	}, nil
 }

@@ -1,11 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -14,12 +12,13 @@ import (
 
 	"github.com/99designs/gqlgen/handler"
 
-	"github.com/rodrwan/medium-example/cmd/server/logger"
 	"github.com/rodrwan/medium-example/database"
 	"github.com/rodrwan/medium-example/graphql"
 	"github.com/rodrwan/medium-example/service"
 
 	_ "github.com/lib/pq"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -28,22 +27,28 @@ func main() {
 
 	flag.Parse()
 
-	db, err := database.NewPostgres(*postgresDSN)
+	logger := log.New()
+	logger.SetFormatter(&log.JSONFormatter{})
+	logger.SetOutput(os.Stdout)
+
+	db, err := database.NewPostgres(logger, *postgresDSN)
 	if err != nil {
 		panic(err)
 	}
 
 	svc := service.NewService(db)
-	logs := func(writer io.Writer, params handlers.LogFormatterParams) {
-		l := &logger.Logger{
-			StatusCode: params.StatusCode,
-			Size:       params.Size,
-			Method:     params.Request.Method,
-			TimeStamp:  time.Now(),
-			URL:        params.URL.String(),
-		}
 
-		json.NewEncoder(writer).Encode(l)
+	logs := func(logger *log.Logger) func(writer io.Writer, params handlers.LogFormatterParams) {
+		return func(writer io.Writer, params handlers.LogFormatterParams) {
+			logger.WithFields(log.Fields{
+				"server":      "GraphQL",
+				"status_code": params.StatusCode,
+				"size":        params.Size,
+				"method":      params.Request.Method,
+				"timestamp":   time.Now(),
+				"url":         params.URL.String(),
+			}).Info(http.StatusText(params.StatusCode))
+		}
 	}
 
 	rootHandler := handler.GraphQL(
@@ -56,16 +61,20 @@ func main() {
 		),
 	)
 
+	programLogger := logger.WithFields(log.Fields{
+		"server": "GraphQL",
+	})
 	mux := http.NewServeMux()
 	mux.Handle("/", handler.Playground("GraphQL playground", "/query"))
-	mux.Handle("/query", handlers.CustomLoggingHandler(os.Stdout, rootHandler, logs))
+	mux.Handle("/query", handlers.CustomLoggingHandler(os.Stdout, rootHandler, logs(logger)))
+
 	server := http.Server{
 		Addr:         fmt.Sprintf(":%d", *port),
 		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  120 * time.Second,
+		WriteTimeout: 10 * time.Second,
 		Handler:      mux,
 	}
-	log.Printf("connect to http://localhost:%d/ for GraphQL playground", *port)
-	log.Fatal(server.ListenAndServe())
+	programLogger.Infof("connect to http://localhost:%d/ for GraphQL playground", *port)
+	programLogger.Fatal(server.ListenAndServe())
 }
