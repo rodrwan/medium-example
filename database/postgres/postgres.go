@@ -24,6 +24,12 @@ type SQLExecutor interface {
 	sqlx.Execer
 }
 
+// SQLExecutorContext encapsulate queryer and execer methods with context.
+type SQLExecutorContext interface {
+	sqlx.QueryerContext
+	sqlx.ExecerContext
+}
+
 // TxFn is custom type that receive SQLExecutor and return an error.
 type TxFn func(SQLExecutor) error
 

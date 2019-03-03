@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"os"
 
 	"github.com/jmoiron/sqlx"
@@ -11,22 +12,22 @@ import (
 // UsersService is the interface that represent basic operation over
 // users table in any database.
 type UsersService interface {
-	Get(*mediumexample.UserQueryOptions) (*mediumexample.User, error)
-	Select() ([]*mediumexample.User, error)
+	Get(context.Context, *mediumexample.UserQueryOptions) (*mediumexample.User, error)
+	Select(context.Context) ([]*mediumexample.User, error)
 
-	Create(*mediumexample.User) error
-	Update(*mediumexample.User) error
-	Delete(*mediumexample.User) error
+	Create(context.Context, *mediumexample.User) error
+	Update(context.Context, *mediumexample.User) error
+	Delete(context.Context, *mediumexample.User) error
 }
 
 // AddressesService is the interface that represent basic operation over
 // addresses table in any database.
 type AddressesService interface {
-	Get(string) (*mediumexample.Address, error)
+	Get(context.Context, string) (*mediumexample.Address, error)
 
-	Create(*mediumexample.Address) error
-	Update(*mediumexample.Address) error
-	Delete(*mediumexample.Address) error
+	Create(context.Context, *mediumexample.Address) error
+	Update(context.Context, *mediumexample.Address) error
+	Delete(context.Context, *mediumexample.Address) error
 }
 
 // Database hold the database services.

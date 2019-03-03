@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 
@@ -16,12 +17,12 @@ var (
 
 // AddressesService is a service that query addresses table using SQLExecutor.
 type AddressesService struct {
-	Store  SQLExecutor
+	Store  SQLExecutorContext
 	Logger Logger
 }
 
 // Get gets a user address by userID
-func (as *AddressesService) Get(userID string) (*mediumexample.Address, error) {
+func (as *AddressesService) Get(ctx context.Context, userID string) (*mediumexample.Address, error) {
 	q := squirrel.Select("*").From("addresses")
 
 	if userID != "" {
@@ -35,7 +36,7 @@ func (as *AddressesService) Get(userID string) (*mediumexample.Address, error) {
 
 	var a mediumexample.Address
 	as.Logger.Print(sqlString, args...)
-	row := as.Store.QueryRowx(sqlString, args...)
+	row := as.Store.QueryRowxContext(ctx, sqlString, args...)
 	if err := row.StructScan(&a); err != nil {
 		return nil, as.addressesError(sqlString, args, err)
 	}
@@ -44,7 +45,7 @@ func (as *AddressesService) Get(userID string) (*mediumexample.Address, error) {
 }
 
 // Create creates the given address.
-func (as *AddressesService) Create(a *mediumexample.Address) error {
+func (as *AddressesService) Create(ctx context.Context, a *mediumexample.Address) error {
 	sql, args, err := squirrel.Insert("addresses").
 		Columns("user_id", "address_line", "city", "locality", "region", "country", "postal_code").
 		Values(a.UserID, a.AddressLine, a.City, a.Locality, a.Region, a.Country, a.PostalCode).
@@ -56,7 +57,7 @@ func (as *AddressesService) Create(a *mediumexample.Address) error {
 	}
 
 	as.Logger.Print(sql, args...)
-	row := as.Store.QueryRowx(sql, args...)
+	row := as.Store.QueryRowxContext(ctx, sql, args...)
 	if err := row.StructScan(a); err != nil {
 		return as.addressesError(sql, args, err)
 	}
@@ -65,7 +66,7 @@ func (as *AddressesService) Create(a *mediumexample.Address) error {
 }
 
 // Update update the given address.
-func (as *AddressesService) Update(a *mediumexample.Address) error {
+func (as *AddressesService) Update(ctx context.Context, a *mediumexample.Address) error {
 	sql, args, err := squirrel.Update("addresses").
 		Set("address_line", a.AddressLine).
 		Set("city", a.City).
@@ -82,7 +83,7 @@ func (as *AddressesService) Update(a *mediumexample.Address) error {
 	}
 
 	as.Logger.Print(sql, args...)
-	row := as.Store.QueryRowx(sql, args...)
+	row := as.Store.QueryRowxContext(ctx, sql, args...)
 	if err := row.StructScan(a); err != nil {
 		return as.addressesError(sql, args, err)
 	}
@@ -91,7 +92,7 @@ func (as *AddressesService) Update(a *mediumexample.Address) error {
 }
 
 // Delete logical delete.
-func (as *AddressesService) Delete(a *mediumexample.Address) error {
+func (as *AddressesService) Delete(ctx context.Context, a *mediumexample.Address) error {
 	sql, args, err := squirrel.Delete("addresses").
 		Where("user_id = ?", a.UserID).
 		PlaceholderFormat(squirrel.Dollar).
@@ -101,7 +102,7 @@ func (as *AddressesService) Delete(a *mediumexample.Address) error {
 	}
 
 	as.Logger.Print(sql, args...)
-	row := as.Store.QueryRowx(sql, args...)
+	row := as.Store.QueryRowxContext(ctx, sql, args...)
 	if err := row.StructScan(a); err != nil {
 		return as.addressesError(sql, args, err)
 	}
