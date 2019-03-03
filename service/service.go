@@ -1,6 +1,8 @@
 package service
 
 import (
+	"context"
+
 	mediumexample "github.com/rodrwan/medium-example"
 	"github.com/rodrwan/medium-example/database"
 )
@@ -11,15 +13,15 @@ type Users struct {
 }
 
 // GetByID gets user by ID.
-func (u *Users) GetByID(id string) (*mediumexample.User, error) {
-	user, err := u.DBStore.UsersService.Get(&mediumexample.UserQueryOptions{
+func (u *Users) GetByID(ctx context.Context, id string) (*mediumexample.User, error) {
+	user, err := u.DBStore.UsersService.Get(ctx, &mediumexample.UserQueryOptions{
 		ID: id,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	addr, err := u.DBStore.AddressesService.Get(user.ID)
+	addr, err := u.DBStore.AddressesService.Get(ctx, user.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -30,14 +32,14 @@ func (u *Users) GetByID(id string) (*mediumexample.User, error) {
 }
 
 // Select gets a collection of user.
-func (u *Users) Select() ([]*mediumexample.User, error) {
-	users, err := u.DBStore.UsersService.Select()
+func (u *Users) Select(ctx context.Context) ([]*mediumexample.User, error) {
+	users, err := u.DBStore.UsersService.Select(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, user := range users {
-		addr, err := u.DBStore.AddressesService.Get(user.ID)
+		addr, err := u.DBStore.AddressesService.Get(ctx, user.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -49,13 +51,13 @@ func (u *Users) Select() ([]*mediumexample.User, error) {
 }
 
 // Create create a new user.
-func (u *Users) Create(user *mediumexample.User) error {
-	if err := u.DBStore.UsersService.Create(user); err != nil {
+func (u *Users) Create(ctx context.Context, user *mediumexample.User) error {
+	if err := u.DBStore.UsersService.Create(ctx, user); err != nil {
 		return err
 	}
 
 	user.Address.UserID = user.ID
-	if err := u.DBStore.AddressesService.Create(user.Address); err != nil {
+	if err := u.DBStore.AddressesService.Create(ctx, user.Address); err != nil {
 		return err
 	}
 

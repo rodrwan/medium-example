@@ -40,7 +40,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input *mediumexample.
 		},
 	}
 
-	if err := r.Service.Create(u); err != nil {
+	if err := r.Service.Create(ctx, u); err != nil {
 		return nil, err
 	}
 
@@ -50,7 +50,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input *mediumexample.
 type queryResolver struct{ *Resolver }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*mediumexample.User, error) {
-	users, err := r.Service.Select()
+	users, err := r.Service.Select(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (r *queryResolver) Users(ctx context.Context) ([]*mediumexample.User, error
 }
 
 func (r *queryResolver) User(ctx context.Context, id string) (mediumexample.User, error) {
-	user, err := r.Service.GetByID(id)
+	user, err := r.Service.GetByID(ctx, id)
 	if err != nil {
 		return mediumexample.User{}, err
 	}

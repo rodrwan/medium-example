@@ -1,6 +1,7 @@
 package mediumexample
 
 import (
+	"context"
 	"errors"
 	"time"
 )
@@ -42,8 +43,8 @@ type UserQueryOptions struct {
 // In the implementation of this interface we use Database
 // that let us operate over users and addresses service.
 type UserService interface {
-	GetByID(string) (*User, error)
-	Select() ([]*User, error)
+	GetByID(context.Context, string) (*User, error)
+	Select(context.Context) ([]*User, error)
 
-	Create(*User) error
+	Create(context.Context, *User) error
 }
