@@ -23,7 +23,7 @@ import (
 )
 
 func main() {
-	postgresDSN := flag.String("postgres-dsn", "postgres://mediumexample:me1234@postgres_medium:5432/example?sslmode=disable", "Postgres domain service name")
+	postgresDSN := flag.String("postgres-dsn", "postgres://mediumexample:me1234@localhost:5432/example?sslmode=disable", "Postgres domain service name")
 	port := flag.Int("port", 8080, "server port")
 
 	flag.Parse()
@@ -45,7 +45,7 @@ func main() {
 
 		json.NewEncoder(writer).Encode(l)
 	}
-	http.Handle("/", handler.Playground("GraphQL playground", "/query"))
+
 	rootHandler := handler.GraphQL(
 		graphql.NewExecutableSchema(
 			graphql.Config{
@@ -55,8 +55,17 @@ func main() {
 			},
 		),
 	)
-	http.Handle("/query", handlers.CustomLoggingHandler(os.Stdout, rootHandler, logs))
 
+	mux := http.NewServeMux()
+	mux.Handle("/", handler.Playground("GraphQL playground", "/query"))
+	mux.Handle("/query", handlers.CustomLoggingHandler(os.Stdout, rootHandler, logs))
+	server := http.Server{
+		Addr:         fmt.Sprintf(":%d", *port),
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  120 * time.Second,
+		Handler:      mux,
+	}
 	log.Printf("connect to http://localhost:%d/ for GraphQL playground", *port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
+	log.Fatal(server.ListenAndServe())
 }
