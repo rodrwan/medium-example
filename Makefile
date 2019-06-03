@@ -1,12 +1,12 @@
 VERSION=v0.0.1
-SVC=medium-example
+SVC=users
 BIN=$(PWD)/bin/$(SVC)
 
 GO ?= go
 LDFLAGS='-extldflags "static" -X main.svcVersion=$(VERSION) -X main.svcName=$(SVC)'
 TAGS=netgo -installsuffix netgo
 
-REGISTRY_URL=gotoschool
+REGISTRY_URL=finciero
 
 run r:
 	@echo "[running] Running service..."
