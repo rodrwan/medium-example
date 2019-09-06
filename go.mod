@@ -9,7 +9,10 @@ require (
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.0.0
 	github.com/pkg/errors v0.8.1 // indirect
+	github.com/sirupsen/logrus v1.4.2
 	github.com/urfave/cli v1.20.0 // indirect
 	github.com/vektah/gqlparser v1.1.1
 	golang.org/x/tools v0.0.0-20190228203856-589c23e65e65 // indirect
 )
+
+go 1.13

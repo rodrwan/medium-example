@@ -1,0 +1,65 @@
+# github.com/99designs/gqlgen v0.7.2
+github.com/99designs/gqlgen/cmd
+github.com/99designs/gqlgen/codegen
+github.com/99designs/gqlgen/codegen/templates
+github.com/99designs/gqlgen/complexity
+github.com/99designs/gqlgen/graphql
+github.com/99designs/gqlgen/graphql/introspection
+github.com/99designs/gqlgen/handler
+github.com/99designs/gqlgen/internal/gopath
+github.com/99designs/gqlgen/internal/imports
+# github.com/Masterminds/squirrel v1.1.0
+github.com/Masterminds/squirrel
+# github.com/agnivade/levenshtein v1.0.1
+github.com/agnivade/levenshtein
+# github.com/gorilla/handlers v1.4.0
+github.com/gorilla/handlers
+# github.com/gorilla/websocket v1.4.0
+github.com/gorilla/websocket
+# github.com/hashicorp/golang-lru v0.5.1
+github.com/hashicorp/golang-lru
+github.com/hashicorp/golang-lru/simplelru
+# github.com/jmoiron/sqlx v1.2.0
+github.com/jmoiron/sqlx
+github.com/jmoiron/sqlx/reflectx
+# github.com/konsorten/go-windows-terminal-sequences v1.0.1
+github.com/konsorten/go-windows-terminal-sequences
+# github.com/lann/builder v0.0.0-20180802200727-47ae307949d0
+github.com/lann/builder
+# github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0
+github.com/lann/ps
+# github.com/lib/pq v1.0.0
+github.com/lib/pq
+github.com/lib/pq/oid
+# github.com/pkg/errors v0.8.1
+github.com/pkg/errors
+# github.com/sirupsen/logrus v1.4.2
+github.com/sirupsen/logrus
+# github.com/urfave/cli v1.20.0
+github.com/urfave/cli
+# github.com/vektah/gqlparser v1.1.1
+github.com/vektah/gqlparser
+github.com/vektah/gqlparser/ast
+github.com/vektah/gqlparser/gqlerror
+github.com/vektah/gqlparser/lexer
+github.com/vektah/gqlparser/parser
+github.com/vektah/gqlparser/validator
+github.com/vektah/gqlparser/validator/rules
+# golang.org/x/sys v0.0.0-20190422165155-953cdadca894
+golang.org/x/sys/unix
+# golang.org/x/tools v0.0.0-20190228203856-589c23e65e65
+golang.org/x/tools/go/ast/astutil
+golang.org/x/tools/go/buildutil
+golang.org/x/tools/go/gcexportdata
+golang.org/x/tools/go/internal/cgo
+golang.org/x/tools/go/internal/gcimporter
+golang.org/x/tools/go/internal/packagesdriver
+golang.org/x/tools/go/loader
+golang.org/x/tools/go/packages
+golang.org/x/tools/imports
+golang.org/x/tools/internal/fastwalk
+golang.org/x/tools/internal/gopathwalk
+golang.org/x/tools/internal/module
+golang.org/x/tools/internal/semver
+# gopkg.in/yaml.v2 v2.2.2
+gopkg.in/yaml.v2
